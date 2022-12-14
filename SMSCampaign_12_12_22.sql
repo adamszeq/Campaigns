@@ -4,13 +4,12 @@ DROP TABLE #RenewalSMSCampaign
 SELECT 
     distinct [OfferProductCode]
     ,[StartDate]
-    ,[CustomerId]
+    ,cd.[CustomerId]
     ,[LYTotalAmount]
     ,TotalAmountTY
-    ,[FirstName]
-    ,[Surname]
-	,case when MobilePhoneNumber is not null and MobilePhoneNumber <> '' then MobilePhoneNumber when WorkPhoneNumber is not null and WorkPhoneNumber<> '' then WorkPhoneNumber when HomePhoneNumber is not null and HomePhoneNumber <> '' then HomePhoneNumber else NULL end as MobilePhoneNumber
-    ,[OfferTotalAmount]
+    ,cd.[FirstName]
+    ,cd.[Surname]
+	,cd.Clean_Phone as 'MobilePhoneNumber'
     ,[OfferInsurerName]
     -- ,case when (TotalAmountTY + isnull(TotalYOYDiscount,0)) -(LYTotalAmount * 1.50) > 150 then '150'
 	--   when (TotalAmountTY + isnull(TotalYOYDiscount,0)) -(LYTotalAmount * 1.50) < 0 then '0'
@@ -20,20 +19,23 @@ SELECT
     -- ,[ContactMethod]
     -- ,[CanBeContacted]
     -- ,[Product]
-    into #RenewalSMSCampaign
+  into #RenewalSMSCampaign
   FROM [OP].[OP].[RenewalHomeMonitor] ren
+  left join op.op.User_Clean_Phone cd on ren.CustomerId=cd.CustomerId
 
 
 where StartDate > CAST( GETDATE() AS Date )
+and IsOffered = 1 -----------------------------------------
 and IsMonthClosedOffRenewal = 0
-and IsCancelled =0
-and IsLapsed =0
+and IsCancelled = 0
+and IsLapsed = 0
 and StartDate > CAST( GETDATE() AS Date ) -- greater than today
-and YOYreal > 0.50
+and YOYreal > 0.15 -----------------------------------------
 and CanBeContacted = 1
+and cd.Clean_Phone<> ''
 
---'#RenewalSMSCampaignReminder'
---archive
+
+
 IF OBJECT_ID('tempdb..#RenewalSMSCampaignReminderDays') IS NOT NULL
 DROP TABLE #RenewalSMSCampaignReminderDays
 
@@ -55,7 +57,7 @@ SELECT
     ,MobilePhoneNumber
     -- ,case when MobilePhoneNumber is null then case when HomePhoneNumber is null then WorkPhoneNumber else HomePhoneNumber end else MobilePhoneNumber end as MobilePhoneNumber
 
-    ,OfferTotalAmount
+    -- ,OfferTotalAmount
     ,OfferInsurerName
     -- ,Discount
     -- ,DiffMaxAndOffered
@@ -166,7 +168,7 @@ into #RenewalSMSCampaignReminderDays25
 FROM #RenewalSMSCampaignReminderDays
 where DaysToRenewal = 25
 
--- SELECT * FROM #RenewalSMSCampaignReminderDays8
+SELECT * FROM #RenewalSMSCampaignReminderDays25
 -- where 
 
 
