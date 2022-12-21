@@ -5,31 +5,22 @@ SELECT
     distinct [OfferProductCode]
     ,[StartDate]
     ,cd.[CustomerId]
-    ,[LYTotalAmount]
-    ,TotalAmountTY
+    -- ,[LYTotalAmount]
+    -- ,TotalAmountTY
     ,cd.[FirstName]
     ,cd.[Surname]
 	,cd.Clean_Phone as 'MobilePhoneNumber'
     ,[OfferInsurerName]
-    -- ,case when (TotalAmountTY + isnull(TotalYOYDiscount,0)) -(LYTotalAmount * 1.50) > 150 then '150'
-	--   when (TotalAmountTY + isnull(TotalYOYDiscount,0)) -(LYTotalAmount * 1.50) < 0 then '0'
-	--   else cast(floor((TotalAmountTY + isnull(TotalYOYDiscount,0)) - (LYTotalAmount * 1.50)) as varchar) end as Discount
-    -- ,(TotalAmountTY+ isnull(TotalYOYDiscount,0)) -(LYTotalAmount * 1.50) as DiffMaxAndOffered
     ,[YoYreal]
-    -- ,[ContactMethod]
-    -- ,[CanBeContacted]
-    -- ,[Product]
   into #RenewalSMSCampaign
   FROM [OP].[OP].[RenewalHomeMonitor] ren
   left join op.op.User_Clean_Phone cd on ren.CustomerId=cd.CustomerId
-
-
 where StartDate > CAST( GETDATE() AS Date )
 and IsOffered = 1 -----------------------------------------
 and IsMonthClosedOffRenewal = 0
 and IsCancelled = 0
 and IsLapsed = 0
-and StartDate > CAST( GETDATE() AS Date ) -- greater than today
+-- and StartDate > CAST( GETDATE() AS Date ) -- greater than today
 and YOYreal > 0.15 -----------------------------------------
 and CanBeContacted = 1
 and cd.Clean_Phone<> ''
@@ -48,8 +39,8 @@ SELECT
     ,DATEDIFF(day, GETDATE(), StartDate) as DaysToRenewal
     ,StartDate
     ,CustomerId
-    ,LYTotalAmount
-    ,TotalAmountTY
+    -- ,LYTotalAmount
+    -- ,TotalAmountTY
     ,FirstName
     ,Surname
     -- ,HomePhoneNumber
@@ -167,9 +158,6 @@ SELECT
 into #RenewalSMSCampaignReminderDays25
 FROM #RenewalSMSCampaignReminderDays
 where DaysToRenewal = 25
-
-SELECT * FROM #RenewalSMSCampaignReminderDays25
--- where 
 
 
 ----------------------------------------------------------------------------------------

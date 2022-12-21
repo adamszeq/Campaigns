@@ -1,4 +1,9 @@
-SELECT [DTR]
+SET NOCOUNT ON
+
+print 'DTR,CustomerId,FirstName,Surname,MobileNumber,OfferProductCode,StartDate,Discount,archive_date'
+
+SELECT 
+      [DTR]
       ,[CustomerId]
       ,[FirstName]
       ,[Surname]
@@ -9,5 +14,8 @@ SELECT [DTR]
       ,[archive_date]
   FROM [OP].[CRM].[HomeRenewalReminderDiscountTextsArchive]
   where archive_date = cast(getdate() as date)
-		and DiscountControlGroup = 1
+		and SendDiscountText = 1
 		and DTR = '-25 Days Reminder'
+
+
+-- remove rows affected by the above query
