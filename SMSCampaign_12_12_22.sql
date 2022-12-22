@@ -651,7 +651,3 @@ SELECT * FROM #RenewalSMSCampaignReminderDays29
 
 UNION
 SELECT * FROM #RenewalSMSCampaignReminderDays30
-
-
--- SELECT * FROM [OP].[CRM].[HomeRenewalReminderDiscountTextsArchive] where archive_date = cast(getdate() as date)
--- order by DTR
